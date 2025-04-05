@@ -6,14 +6,8 @@ import { ChevronDown, X, Menu } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
 import 'boxicons';
 
-interface HeroSectionProps {
-  setBackgroundColor?: (color: string) => void;
-}
-
-export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
+export default function HeroSection() {
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const [userHasStartedScrolling, setUserHasStartedScrolling] = useState(false);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const heroRef = useRef<HTMLDivElement | null>(null);
   const scrollY = useMotionValue(0);
@@ -38,44 +32,20 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
     }
 
     requestAnimationFrame(update);
-
-    return () => {
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, [scrollY]);
 
   const textY = useTransform(scrollY, [0, heroEnd - 200], [0, heroEnd / 2]);
   const textOpacity = useTransform(scrollY, [heroEnd - 300, heroEnd], [1, 0]);
   const scrollIndicatorOpacity = useTransform(scrollY, [0, 10], [1, 0]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!userHasStartedScrolling) {
-        setUserHasStartedScrolling(true);
-      }
-
-      if (!titleRef.current) return;
-      const rect = titleRef.current.getBoundingClientRect();
-      const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
-      if (isInView && hasScrolled) {
-        setHasScrolled(false);
-        setBackgroundColor?.('#B1B5A4');
-      } else if (!isInView && !hasScrolled) {
-        setHasScrolled(true);
-        setBackgroundColor?.('#153439');
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasScrolled, setBackgroundColor, userHasStartedScrolling]);
+  const wave1Y = useTransform(scrollY, [0, heroEnd], [0, 100]);
+  const wave2Y = useTransform(scrollY, [0, heroEnd], [0, 50]);
 
   return (
     <div
       ref={heroRef}
-      className="relative flex flex-col items-center justify-center h-screen transition-colors duration-500"
-      style={{ backgroundColor: userHasStartedScrolling && hasScrolled ? '#153439' : '#B1B5A4' }}
+      className="relative flex flex-col items-center justify-center h-screen transition-colors duration-500 overflow-hidden bg-[#B1B5A4]"
     >
       {/* Hamburger Button */}
       <button
@@ -89,7 +59,6 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
       <AnimatePresence>
         {isNavOpen && (
           <>
-            {/* Left Curtain */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: '0%' }}
@@ -97,8 +66,6 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
               transition={{ duration: 0.8, ease: 'easeInOut' }}
               className="fixed top-0 left-0 w-1/2 h-full bg-[#522417] z-40"
             />
-
-            {/* Right Curtain */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: '0%' }}
@@ -106,8 +73,6 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
               transition={{ duration: 0.8, ease: 'easeInOut' }}
               className="fixed top-0 right-0 w-1/2 h-full bg-[#522417] z-40"
             />
-
-            {/* Nav Content */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -115,42 +80,46 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
               transition={{ delay: 0.5, duration: 0.3 }}
               className="fixed inset-0 flex flex-col items-center justify-center z-50 text-white px-4"
             >
-              {/* Close Button */}
               <button
                 onClick={() => setIsNavOpen(false)}
                 className="absolute top-5 right-5 w-12 h-12 flex items-center justify-center"
               >
                 <X size={32} />
               </button>
-
-              {/* Nav Links */}
-              <nav className="flex flex-col gap-6 items-center text-2xl sm:text-3xl font-bold" style={{ fontFamily: 'var(--font-sub)' }}>
-                <a href="#projects" className="hover:underline text-[#b1b5a4]">Projects</a>
-                <a href="#contact" className="hover:underline text-[#b1b5a4]">Contact</a>
+              <nav
+                className="flex flex-col gap-6 items-center text-2xl sm:text-3xl font-bold"
+                style={{ fontFamily: 'var(--font-sub)' }}
+              >
+                <a href="#projects" className="hover:underline text-[#b1b5a4]">
+                  Projects
+                </a>
+                <a href="#contact" className="hover:underline text-[#b1b5a4]">
+                  Contact
+                </a>
               </nav>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Responsive Title */}
+      {/* Hero Title */}
       <motion.h1
         ref={titleRef}
         style={{
           y: textY,
           opacity: textOpacity,
-          fontFamily: "var(--font-name)",
-          color: userHasStartedScrolling && hasScrolled ? '#B1B5A4' : '#522417',
+          fontFamily: 'var(--font-name)',
+          color: '#522417',
         }}
-        className="font-extrabold tracking-wider drop-shadow-lg transition-colors duration-500 text-[clamp(3rem,10vw,14rem)] text-center px-4"
+        className="font-extrabold tracking-wider drop-shadow-lg transition-colors duration-500 text-[clamp(3rem,10vw,14rem)] text-center px-4 relative z-10"
       >
         VEDANT
       </motion.h1>
 
       {/* Scroll Indicator */}
       <motion.div
-        style={{ fontFamily: "var(--font-sub)", opacity: scrollIndicatorOpacity, color: '#522417' }}
-        className="absolute bottom-10 flex flex-col items-center text-base sm:text-lg font-bold"
+        style={{ fontFamily: 'var(--font-sub)', opacity: scrollIndicatorOpacity, color: '#522417' }}
+        className="absolute bottom-10 flex flex-col items-center text-base sm:text-lg font-bold z-10"
       >
         scroll
         <motion.div
@@ -159,6 +128,34 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
         >
           <ChevronDown size={24} />
         </motion.div>
+      </motion.div>
+
+      {/* Back Wave (wave2) */}
+      <motion.div
+        style={{ y: wave2Y }}
+        className="absolute bottom-0 left-0 w-full h-[180px] sm:h-[240px] md:h-[300px] z-0 pointer-events-none"
+      >
+        <svg className="w-full h-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path
+            fill="#803225"
+            fillOpacity="1"
+            d="M0,224L60,192C120,160,240,96,360,101.3C480,107,600,181,720,181.3C840,181,960,107,1080,90.7C1200,75,1320,117,1380,138.7L1440,160V320H0Z"
+          />
+        </svg>
+      </motion.div>
+
+      {/* Front Wave (wave1) */}
+      <motion.div
+        style={{ y: wave1Y }}
+        className="absolute bottom-0 left-0 w-full h-[200px] sm:h-[280px] md:h-[360px] z-10 pointer-events-none"
+      >
+        <svg className="w-full h-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path
+            fill="#153439"
+            fillOpacity="1"
+            d="M0,160L80,144C160,128,320,96,480,106.7C640,117,800,171,960,192C1120,213,1280,203,1360,197.3L1440,192V320H0Z"
+          />
+        </svg>
       </motion.div>
     </div>
   );

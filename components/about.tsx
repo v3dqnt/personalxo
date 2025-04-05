@@ -1,12 +1,10 @@
 'use client';
 import { motion } from "framer-motion";
 import { useEffect, useState, useRef, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
 import Image from "next/image";
 import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
 
-const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => void }) => {
-  const { ref, inView } = useInView({ triggerOnce: false, threshold: 0 });
+const About = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -21,10 +19,6 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  useEffect(() => {
-    setBackgroundColor(inView ? "#153439" : "#f3f4f6");
-  }, [inView, setBackgroundColor]);
 
   useEffect(() => {
     if (!isMounted || !audioRef.current) return;
@@ -56,10 +50,7 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
   };
 
   return (
-    <section
-      ref={ref}
-      className="relative grid grid-cols-1 md:grid-cols-3 grid-rows-auto md:grid-rows-2 gap-6 min-h-screen px-4 sm:px-6 md:px-12 py-6 transition-all duration-500"
-    >
+    <section className="relative grid grid-cols-1 md:grid-cols-3 grid-rows-auto md:grid-rows-2 gap-6 min-h-screen px-4 sm:px-6 md:px-12 py-6 transition-all duration-500 bg-[#153439]">
       {/* Profile Image */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -127,8 +118,8 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
               </button>
 
               <button onClick={togglePlay} className="p-3 rounded-full bg-white hover:bg-gray-200" aria-label={isPlaying ? "Pause" : "Play"}>
-                {isPlaying ? 
-                  <Pause size={24} className="text-[#153439]" /> : 
+                {isPlaying ?
+                  <Pause size={24} className="text-[#153439]" /> :
                   <Play size={24} className="text-[#153439] ml-1" />
                 }
               </button>
@@ -139,7 +130,6 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
             </div>
           </div>
 
-          {/* Hidden audio element */}
           {isMounted && <audio ref={audioRef} onEnded={nextTrack} />}
         </motion.div>
 
