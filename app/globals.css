@@ -1,12 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=New+Rocker&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap');
 @import "tailwindcss";
 
 :root{
-  --font-sans: 'Space Grotesk', sans-serif;
-  --font-body: "Manrope", sans-serif;
   --font-name: "New Rocker", system-ui;
   --font-sub:  "Alumni Sans Pinstripe", sans-serif;
 }
@@ -14,5 +8,4 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Space Grotesk', sans-serif;
 }
