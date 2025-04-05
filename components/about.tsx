@@ -12,53 +12,38 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Fix the tracks array with useMemo to address the ESLint warning
   const tracks = useMemo(() => [
     { title: "Sunsetz", src: "/Sunsetz.mp3", image: "/sunsetz.jpg" },
     { title: "I Love You So", src: "/ilys.mp3", image: "/2v.jpg" },
     { title: "Shower", src: "/shower.mp3", image: "/1968.png" },
   ], []);
 
-  // Add useEffect for client-side mounting to avoid window not defined error
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (inView) {
-      setBackgroundColor("#153439");
-    } else {
-      setBackgroundColor("#f3f4f6");
-    }
+    setBackgroundColor(inView ? "#153439" : "#f3f4f6");
   }, [inView, setBackgroundColor]);
 
   useEffect(() => {
-    // Only run on client-side
-    if (!isMounted) return;
-    
-    if (audioRef.current) {
-      audioRef.current.src = tracks[currentTrackIndex].src;
-      if (isPlaying) {
-        audioRef.current.play().catch(err => {
-          console.error("Audio playback error:", err);
-          setIsPlaying(false);
-        });
-      }
+    if (!isMounted || !audioRef.current) return;
+    audioRef.current.src = tracks[currentTrackIndex].src;
+    if (isPlaying) {
+      audioRef.current.play().catch(err => {
+        console.error("Audio playback error:", err);
+        setIsPlaying(false);
+      });
     }
   }, [currentTrackIndex, isPlaying, tracks, isMounted]);
 
   const togglePlay = () => {
     if (!isMounted || !audioRef.current) return;
-    
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().catch(err => {
-        console.error("Audio playback error:", err);
-      }).then(() => {
-        setIsPlaying(true);
-      });
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(err => console.error("Audio playback error:", err));
     }
   };
 
@@ -73,7 +58,7 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
   return (
     <section
       ref={ref}
-      className="relative grid grid-cols-1 md:grid-cols-3 grid-rows-auto md:grid-rows-2 gap-6 min-h-screen px-4 md:px-12 py-6 transition-all duration-500"
+      className="relative grid grid-cols-1 md:grid-cols-3 grid-rows-auto md:grid-rows-2 gap-6 min-h-screen px-4 sm:px-6 md:px-12 py-6 transition-all duration-500"
     >
       {/* Profile Image */}
       <motion.div
@@ -98,11 +83,11 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        className="bg-[#b1b5a4] col-span-1 md:col-span-2 row-span-1 rounded-xl shadow-md flex flex-col items-center justify-center text-center p-6 overflow-hidden"
+        className="bg-[#b1b5a4] col-span-1 md:col-span-2 row-span-1 rounded-xl shadow-md flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-12 py-6 overflow-hidden"
         style={{ backgroundImage: "url('/grain-texture.png')", backgroundSize: "cover" }}
       >
-        <p className="text-3xl md:text-4xl text-[#522417] font-extrabold" style={{ fontFamily: 'var(--font-sub)' }}>Hey, I'm Vedant!</p>
-        <p className="text-xl md:text-2xl text-[#522417] mt-3 max-w-lg font-extrabold" style={{ fontFamily: 'var(--font-sub)' }}>
+        <p className="text-2xl sm:text-3xl md:text-4xl text-[#522417] font-extrabold" style={{ fontFamily: 'var(--font-sub)' }}>Hey, I'm Vedant!</p>
+        <p className="text-base sm:text-xl md:text-2xl text-[#522417] mt-3 max-w-lg font-extrabold" style={{ fontFamily: 'var(--font-sub)' }}>
           A passionate developer with a keen eye for design and a love for crafting seamless digital experiences.
           Specializing in front-end and full-stack development, I enjoy turning ideas into interactive, high-performing applications.
         </p>
@@ -110,17 +95,17 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
 
       {/* Music Player & Tech Stack */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 col-span-1 md:col-span-2 row-span-1">
-        {/* Music Player - Only render audio element on client side */}
+        {/* Music Player */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-[#b1b5a4] rounded-xl p-4 overflow-hidden flex flex-col sm:flex-row"
+          className="bg-[#b1b5a4] rounded-xl p-4 sm:p-6 overflow-hidden flex flex-col sm:flex-row"
           style={{ backgroundImage: "url('/grain-texture.png')", backgroundSize: "cover" }}
         >
           {/* Album Art */}
           <div className="w-full sm:w-7/12 flex flex-col items-center justify-center p-2">
-            <div className="relative w-40 h-40 md:w-48 md:h-48">
+            <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 aspect-square">
               <Image
                 src={tracks[currentTrackIndex].image}
                 alt="Album Art"
@@ -129,14 +114,14 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
                 className="rounded-lg w-full h-full object-cover"
               />
             </div>
-
-            {/* Song Title Below */}
-            <p className="text-[#153439] text-lg font-semibold mt-3" style={{ fontFamily: 'var(--font-sub)' }}>{tracks[currentTrackIndex].title}</p>
+            <p className="text-[#153439] text-base sm:text-lg font-semibold mt-3 text-center" style={{ fontFamily: 'var(--font-sub)' }}>
+              {tracks[currentTrackIndex].title}
+            </p>
           </div>
 
           {/* Playback Controls */}
-          <div className="w-full sm:w-5/12 bg-[#153439] rounded-lg flex flex-col items-center justify-center py-6 mt-4 sm:mt-0">
-            <div className="flex flex-col items-center space-y-4">
+          <div className="w-full sm:w-5/12 bg-[#153439] rounded-lg flex items-center justify-center py-4 sm:py-6 mt-4 sm:mt-0">
+            <div className="flex flex-row sm:flex-col items-center justify-center gap-4">
               <button onClick={prevTrack} className="p-2 rounded-full hover:bg-[#0f272b]" aria-label="Previous track">
                 <SkipBack size={24} className="text-white" />
               </button>
@@ -154,16 +139,16 @@ const About = ({ setBackgroundColor }: { setBackgroundColor: (color: string) => 
             </div>
           </div>
 
-          {/* Hidden audio element - Only render on client side */}
+          {/* Hidden audio element */}
           {isMounted && <audio ref={audioRef} onEnded={nextTrack} />}
         </motion.div>
 
-        {/* Skills */}
+        {/* Skills Grid */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-[#b1b5a4] rounded-xl grid grid-cols-3 grid-rows-2 gap-2 p-4"
+          className="bg-[#b1b5a4] rounded-xl grid grid-cols-3 grid-rows-2 gap-2 p-4 sm:p-6"
           style={{ backgroundImage: "url('/grain-texture.png')", backgroundSize: "cover" }}
         >
           {['html', 'tw', 'js', 'react', 'njs', 'next'].map((tech) => (

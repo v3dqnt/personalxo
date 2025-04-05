@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
-import { ChevronDown, X, Menu } from 'lucide-react'; // Import Menu (hamburger icon)
+import { ChevronDown, X, Menu } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
-import 'boxicons'
+import 'boxicons';
 
 interface HeroSectionProps {
   setBackgroundColor?: (color: string) => void;
@@ -36,6 +36,7 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
       scrollY.set(lenis.scroll);
       requestAnimationFrame(update);
     }
+
     requestAnimationFrame(update);
 
     return () => {
@@ -79,12 +80,12 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsNavOpen(true)}
-        className="absolute top-5 left-5 p-2 rounded-md flex items-center justify-center"
+        className="absolute top-5 left-5 p-2 rounded-md flex items-center justify-center z-50"
       >
         <Menu size={32} color="#522417" />
       </button>
 
-      {/* Navigation Menu with "Curtain Effect" */}
+      {/* Navigation Menu */}
       <AnimatePresence>
         {isNavOpen && (
           <>
@@ -94,7 +95,7 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
               animate={{ x: '0%' }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.8, ease: 'easeInOut' }}
-              className="fixed top-0 left-0 w-1/2 h-full bg-[#522417] z-50"
+              className="fixed top-0 left-0 w-1/2 h-full bg-[#522417] z-40"
             />
 
             {/* Right Curtain */}
@@ -103,16 +104,16 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
               animate={{ x: '0%' }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.8, ease: 'easeInOut' }}
-              className="fixed top-0 right-0 w-1/2 h-full bg-[#522417] z-50"
+              className="fixed top-0 right-0 w-1/2 h-full bg-[#522417] z-40"
             />
 
-            {/* Content (Navigation Links + Close Button) */}
+            {/* Nav Content */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.5, duration: 0.3 }}
-              className="fixed inset-0 flex flex-col items-center justify-center z-50 text-white"
+              className="fixed inset-0 flex flex-col items-center justify-center z-50 text-white px-4"
             >
               {/* Close Button */}
               <button
@@ -122,26 +123,26 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
                 <X size={32} />
               </button>
 
-              {/* Updated Navigation Links */}
-              <nav className="text-3xl space-y-6">
-                <a href="#projects" className="hover:underline p-5 font-bold" style={{ fontFamily: 'var(--font-sub)', color: '#b1b5a4' }}>Projects</a>
-                <a href="#contact" className="hover:underline p-5 font-bold" style={{ fontFamily: 'var(--font-sub)', color: '#b1b5a4' }}>Contact</a>
+              {/* Nav Links */}
+              <nav className="flex flex-col gap-6 items-center text-2xl sm:text-3xl font-bold" style={{ fontFamily: 'var(--font-sub)' }}>
+                <a href="#projects" className="hover:underline text-[#b1b5a4]">Projects</a>
+                <a href="#contact" className="hover:underline text-[#b1b5a4]">Contact</a>
               </nav>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Title */}
+      {/* Responsive Title */}
       <motion.h1
         ref={titleRef}
         style={{
           y: textY,
           opacity: textOpacity,
           fontFamily: "var(--font-name)",
-          color: userHasStartedScrolling && hasScrolled ? '#B1B5A4' : '#522417'
+          color: userHasStartedScrolling && hasScrolled ? '#B1B5A4' : '#522417',
         }}
-        className="text-[250px] font-extrabold tracking-wider drop-shadow-lg transition-colors duration-500"
+        className="font-extrabold tracking-wider drop-shadow-lg transition-colors duration-500 text-[clamp(3rem,10vw,14rem)] text-center px-4"
       >
         VEDANT
       </motion.h1>
@@ -149,7 +150,7 @@ export default function HeroSection({ setBackgroundColor }: HeroSectionProps) {
       {/* Scroll Indicator */}
       <motion.div
         style={{ fontFamily: "var(--font-sub)", opacity: scrollIndicatorOpacity, color: '#522417' }}
-        className="absolute w-30 h-30 top-[650px] rounded-full flex flex-col items-center justify-center text-[20px] drop-shadow-lg p-4 font-bold"
+        className="absolute bottom-10 flex flex-col items-center text-base sm:text-lg font-bold"
       >
         scroll
         <motion.div
