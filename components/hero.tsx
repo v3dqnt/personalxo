@@ -108,7 +108,7 @@ export default function HeroSection() {
         style={{
           y: textY,
           opacity: textOpacity,
-          fontFamily: 'var(--font-name)',
+          fontFamily: 'pilow, display',
           color: '#522417',
         }}
         className="font-extrabold tracking-wider drop-shadow-lg transition-colors duration-500 text-[clamp(3rem,10vw,14rem)] text-center px-4 relative z-10"

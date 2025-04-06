@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Alumni_Sans_Pinstripe, New_Rocker } from "next/font/google";
+import {
+  Alumni_Sans_Pinstripe,
+  New_Rocker,
+  Montserrat,
+} from "next/font/google";
 import "./globals.css";
 
 // Importing Google Fonts using next/font
@@ -15,6 +19,12 @@ const newRocker = New_Rocker({
   variable: "--font-name",
 });
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-body",
+});
+
 export const metadata: Metadata = {
   title: "Vedant",
   description: "Peace.",
@@ -27,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${newRocker.variable} ${alumniSansPinstripe.variable} antialiased`}>
+      <body
+        className={`${newRocker.variable} ${alumniSansPinstripe.variable} ${montserrat.variable} antialiased`}
+      >
         {children}
       </body>
     </html>

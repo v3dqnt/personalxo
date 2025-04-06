@@ -15,6 +15,7 @@
     "animejs": "^4.0.0",
     "bootstrap-icons": "^1.11.3",
     "boxicons": "^2.1.4",
+    "fast-average-color": "^9.5.0",
     "framer-motion": "^12.5.0",
     "gsap": "^3.12.7",
     "lenis": "^1.2.3",
