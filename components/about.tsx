@@ -1,27 +1,26 @@
-"use client";
+'use client';
 
 import { useEffect, useRef, useState } from "react";
 import Lenis from "@studio-freight/lenis";
-import { motion } from "framer-motion"; // Import motion from Framer Motion
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image"; // <-- Import Next.js Image
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Register plugins
     if (typeof window !== 'undefined') {
       gsap.registerPlugin(ScrollTrigger);
     }
-    
-    // Initialize Lenis with correct options
+
     const lenis = new Lenis({
-      lerp: 0.07, // Smoother scrolling (lower = slower)
+      lerp: 0.07,
       touchMultiplier: 1.5,
       wheelMultiplier: 1.2,
     });
@@ -33,28 +32,15 @@ export default function About() {
 
     requestAnimationFrame(raf);
 
-    // Synchronize Lenis and ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    // Mark component as loaded
     setIsLoaded(true);
 
-    // Clean up function
     return () => {
       lenis.destroy();
-      
-      // Kill any lingering ScrollTrigger instances to prevent memory leaks
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
-
-  // Handle image loading
-  const handleImageLoad = () => {
-    if (imageRef.current) {
-      // Ensure image is properly visible after load
-      gsap.to(imageRef.current, { autoAlpha: 1, duration: 0.3 });
-    }
-  };
 
   return (
     <section
@@ -67,53 +53,58 @@ export default function About() {
         ref={headingRef}
         className="text-[10vw] leading-none font-bold text-[#f5eddf] mb-16 md:mb-32"
         style={{ fontFamily: "pilow, display" }}
-        initial={{ opacity: 0, y: 50 }} // Initial position and opacity
-        whileInView={{ opacity: 1, y: 0 }} // When in view, animate to full opacity and reset position
-        transition={{ duration: 1, ease: "easeOut" }} // Smooth transition
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
         ABOUT
       </motion.h1>
 
-      {/* Content block */}
+      {/* Content Block */}
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full">
-        {/* Left: Image */}
-        <div className="w-full md:w-1/2 overflow-hidden rounded-2xl">
-          <motion.img
-            ref={imageRef}
+        {/* Left: Optimized Image */}
+        <motion.div
+          ref={imageContainerRef}
+          className="w-full md:w-1/2 overflow-hidden rounded-2xl relative"
+          initial={{ x: -150, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        >
+          <Image
             src="/AMBIENT.jpg"
             alt="Vedant About"
-            className="w-full h-full object-cover rounded-2xl transform-gpu" // Use GPU for better performance
-            style={{ visibility: isLoaded ? 'visible' : 'hidden' }}
-            initial={{ x: -150, opacity: 0 }} // Initial off-screen position and opacity
-            whileInView={{ x: 0, opacity: 1 }} // Slide in to the center and fade in
-            transition={{ duration: 1.5, ease: "easeOut" }} // Smooth transition
-            onLoad={handleImageLoad}
+            className="rounded-2xl object-cover w-full h-full"
+            fill
+            quality={85} // Good compression without losing quality
+            priority={false} // Use lazy loading (default behavior)
+            placeholder="blur" // Optional blur effect during loading
+            blurDataURL="/placeholder.png" // Provide a small base64 image if you have it
+            sizes="(max-width: 768px) 100vw, 50vw" // Responsive image sizes
           />
-        </div>
+        </motion.div>
 
         {/* Right: Text */}
         <div className="w-full md:w-1/2 flex flex-col justify-center">
-          {/* Heading */}
           <motion.h2
-            className="text-[#f5eddf] text-[32px] sm:text-[40px] md:text-[48px] font-bold uppercase tracking-wider mb-12 md:mb-24 leading-tight"
+            className="text-[#f5eddf] text-[32px] sm:text-[40px] md:text-[48px] font-bold tracking-wider mb-12 md:mb-24 leading-tight"
             style={{
               fontFamily: "'Satoshi', 'Inter', sans-serif",
             }}
-            initial={{ opacity: 0, y: 50 }} // Initial position and opacity
-            whileInView={{ opacity: 1, y: 0 }} // When in view, animate to full opacity and reset position
-            transition={{ duration: 1, ease: "easeOut" }} // Smooth transition
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
           >
-            DEVELOPER // DESIGNER
+            Developer &
+            Designer
           </motion.h2>
 
-          {/* Paragraph */}
           <motion.p
             ref={textRef}
             className="text-[#f5eddf] text-[16px] sm:text-[18px] md:text-[20px] leading-relaxed tracking-wide"
             style={{ fontFamily: "'Satoshi', 'Inter', sans-serif" }}
-            initial={{ opacity: 0, y: 70 }} // Initial position and opacity
-            whileInView={{ opacity: 1, y: 0 }} // When in view, animate to full opacity and reset position
-            transition={{ duration: 1.5, ease: "easeOut" }} // Smooth transition
+            initial={{ opacity: 0, y: 70 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
           >
             Vedant is a creative developer passionate about blending technology with visual storytelling. With a focus on crafting smooth, immersive web experiences, his work transforms simple interactions into memorable digital journeys. Specializing in frontend development with Next.js and animation libraries, Vedant brings a modern and artistic touch to every project he undertakes.
           </motion.p>

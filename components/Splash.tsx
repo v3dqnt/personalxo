@@ -38,18 +38,18 @@ export default function Splash() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }} // Faster fade-out
         >
-          <div className="w-full flex items-center justify-center px-4">
+          {/* This outer div ensures the SVG is properly centered in the viewport */}
+          <div className="w-full h-full flex items-center justify-center">
             <svg
               viewBox="0 0 1200 300"
               preserveAspectRatio="xMidYMid meet"
-              className="w-full max-w-[1200px] h-auto"
+              className="w-[95%] max-w-[800px]"
             >
               <text
-                x="50%"
-                y="50%"
-                dy="25"
+                x="600"
+                y="150"
                 textAnchor="middle"
-                dominantBaseline="middle"
+                dominantBaseline="central"
                 className="handwriting-text"
               >
                 VEDANT
@@ -71,7 +71,13 @@ export default function Splash() {
 
             @media (max-width: 768px) {
               .handwriting-text {
-                font-size: 72px;
+                font-size: 100px;
+              }
+            }
+
+            @media (max-width: 480px) {
+              .handwriting-text {
+                font-size: 70px;
               }
             }
 

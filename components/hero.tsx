@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
-import { ChevronDown, X, Menu } from 'lucide-react';
+import { ChevronDown, X, Menu, ArrowRight } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
 import 'boxicons';
+import Link from "next/link";
+
 
 export default function HeroSection() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -54,6 +56,24 @@ export default function HeroSection() {
       >
         <Menu size={32} color="#776B5D" />
       </button>
+
+      {/* Contact Me Button */}
+      <a 
+        href="#contact" 
+        className="absolute top-5 right-5 z-50 group"
+      >
+        <motion.div 
+          className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#776B5D] text-[#776B5D] font-medium"
+          whileHover={{ backgroundColor: '#776B5D', color: '#EBE3D5' }}
+          transition={{ duration: 0.3 }}
+          style={{ fontFamily: 'Satoshi, sans-serif' }}
+        >
+          <span>Contact Me</span>
+          <span className="group-hover:translate-x-1 transition-transform duration-300">
+            <ArrowRight size={18} />
+          </span>
+        </motion.div>
+      </a>
 
       {/* Hero Title */}
       <motion.h1
@@ -113,7 +133,7 @@ export default function HeroSection() {
         </>
       )}
 
-      {/* Navigation Menu with covering waves */}
+      {/* Navigation Menu sliding from top */}
       <AnimatePresence mode="wait">
         {isNavOpen && (
           <>
@@ -127,58 +147,21 @@ export default function HeroSection() {
               onClick={() => setIsNavOpen(false)}
             />
 
-            {/* Back Wave (full screen) */}
+            {/* Menu Background */}
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: '0%' }}
-              exit={{ y: '100%' }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-0 flex items-end justify-center z-40 pointer-events-none"
-            >
-              <svg
-                className="w-full h-screen absolute bottom-0"
-                viewBox="0 0 1440 1000"
-                preserveAspectRatio="none"
-              >
-                <motion.path
-                  initial={{ d: 'M0,800L60,750C120,700,240,600,360,550C480,500,600,500,720,550C840,600,960,700,1080,750C1200,800,1320,800,1380,800L1440,800L1440,1000L0,1000Z' }}
-                  animate={{ d: 'M0,0L60,0C120,0,240,0,360,0C480,0,600,0,720,0C840,0,960,0,1080,0C1200,0,1320,0,1380,0L1440,0L1440,1000L0,1000Z' }}
-                  exit={{ d: 'M0,800L60,750C120,700,240,600,360,550C480,500,600,500,720,550C840,600,960,700,1080,750C1200,800,1320,800,1380,800L1440,800L1440,1000L0,1000Z' }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  fill="#B0A695"
-                />
-              </svg>
-            </motion.div>
-
-            {/* Front Wave (full screen) */}
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: '0%' }}
-              exit={{ y: '100%' }}
-              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="fixed inset-0 flex items-end justify-center z-41 pointer-events-none"
-            >
-              <svg
-                className="w-full h-screen absolute bottom-0"
-                viewBox="0 0 1440 1000"
-                preserveAspectRatio="none"
-              >
-                <motion.path
-                  initial={{ d: 'M0,700L80,700C160,700,320,700,480,650C640,600,800,500,960,450C1120,400,1280,400,1360,400L1440,400L1440,1000L0,1000Z' }}
-                  animate={{ d: 'M0,0L80,0C160,0,320,0,480,0C640,0,800,0,960,0C1120,0,1280,0,1360,0L1440,0L1440,1000L0,1000Z' }}
-                  exit={{ d: 'M0,700L80,700C160,700,320,700,480,650C640,600,800,500,960,450C1120,400,1280,400,1360,400L1440,400L1440,1000L0,1000Z' }}
-                  transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                  fill="#776B5D"
-                />
-              </svg>
-            </motion.div>
+              initial={{ y: "-100%" }}
+              animate={{ y: "0%" }}
+              exit={{ y: "-100%" }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-0 bg-[#776B5D] z-40"
+            />
 
             {/* Menu Content */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
               className="fixed inset-0 flex flex-col items-center justify-center z-50 text-white px-4"
             >
               <button
@@ -188,20 +171,26 @@ export default function HeroSection() {
                 <X size={32} />
               </button>
               <nav
-                className="flex flex-col gap-6 items-center text-2xl sm:text-3xl font-bold"
+                className="flex flex-col gap-12 items-center font-bold"
                 style={{ fontFamily: 'var(--font-sub)' }}
               >
                 <motion.a
-                  href="#projects"
-                  className="hover:underline text-[#F3EEEA]"
+                style={{ fontFamily: 'pilow, display' }}
+                  href="/projects"
+                  className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   Projects
                 </motion.a>
                 <motion.a
-                  href="#contact"
-                  className="hover:underline text-[#F3EEEA]"
+                style={{ fontFamily: 'pilow, display' }}
+                  href="#media"
+                  className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  Contact
+                  Media
                 </motion.a>
               </nav>
             </motion.div>
