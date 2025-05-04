@@ -1,17 +1,35 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
 import { ChevronDown, X, Menu, ArrowRight } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
 import 'boxicons';
-
 
 export default function HeroSection() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const scrollY = useMotionValue(0);
   const [heroEnd, setHeroEnd] = useState(1000);
+
+  const clickAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    clickAudioRef.current = new Audio('/click.mp3');
+    clickAudioRef.current.load();
+  }, []);
+
+  const playClickSound = useCallback(() => {
+    if (clickAudioRef.current) {
+      clickAudioRef.current.currentTime = 0;
+      clickAudioRef.current.play().catch((e) => console.warn('Click sound error:', e));
+    }
+  }, []);
+
+  const playPopSound = useCallback(() => {
+    const audio = new Audio('/pop.mp3');
+    audio.play().catch((e) => console.warn('Pop sound error:', e));
+  }, []);
 
   useEffect(() => {
     const el = heroRef.current;
@@ -39,9 +57,16 @@ export default function HeroSection() {
   const textY = useTransform(scrollY, [0, heroEnd - 200], [0, heroEnd / 2]);
   const textOpacity = useTransform(scrollY, [heroEnd - 300, heroEnd], [1, 0]);
   const scrollIndicatorOpacity = useTransform(scrollY, [0, 10], [1, 0]);
-
   const wave1Y = useTransform(scrollY, [0, heroEnd], [0, 100]);
   const wave2Y = useTransform(scrollY, [0, heroEnd], [0, 50]);
+
+  const handleNavLinkClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    playPopSound();
+    setTimeout(() => {
+      window.location.href = href;
+    }, 150); // Allow time for sound to play
+  };
 
   return (
     <div
@@ -50,18 +75,22 @@ export default function HeroSection() {
     >
       {/* Hamburger Button */}
       <button
-        onClick={() => setIsNavOpen(true)}
+        onClick={() => {
+          playClickSound();
+          setIsNavOpen(true);
+        }}
         className="absolute top-5 left-5 p-2 rounded-md flex items-center justify-center z-50"
       >
         <Menu size={32} color="#776B5D" />
       </button>
 
       {/* Contact Me Button */}
-      <a 
-        href="#contact" 
+      <a
+        href="#contact"
         className="absolute top-5 right-5 z-50 group"
+        onClick={playClickSound}
       >
-        <motion.div 
+        <motion.div
           className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#776B5D] text-[#776B5D] font-medium"
           whileHover={{ backgroundColor: '#776B5D', color: '#EBE3D5' }}
           transition={{ duration: 0.3 }}
@@ -89,7 +118,11 @@ export default function HeroSection() {
 
       {/* Scroll Indicator */}
       <motion.div
-        style={{ fontFamily: 'var(--font-sub)', opacity: scrollIndicatorOpacity, color: '#776B5D' }}
+        style={{
+          fontFamily: 'var(--font-sub)',
+          opacity: scrollIndicatorOpacity,
+          color: '#776B5D',
+        }}
         className="absolute bottom-10 flex flex-col items-center text-base sm:text-lg font-bold z-10"
       >
         scroll
@@ -101,7 +134,7 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
 
-      {/* Static Waves (visible only when menu is closed) */}
+      {/* Static Waves */}
       {!isNavOpen && (
         <>
           <motion.div
@@ -132,30 +165,30 @@ export default function HeroSection() {
         </>
       )}
 
-      {/* Navigation Menu sliding from top */}
+      {/* Navigation */}
       <AnimatePresence mode="wait">
         {isNavOpen && (
           <>
-            {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
-              onClick={() => setIsNavOpen(false)}
+              onClick={() => {
+                playClickSound();
+                setIsNavOpen(false);
+              }}
             />
 
-            {/* Menu Background */}
             <motion.div
-              initial={{ y: "-100%" }}
-              animate={{ y: "0%" }}
-              exit={{ y: "-100%" }}
+              initial={{ y: '-100%' }}
+              animate={{ y: '0%' }}
+              exit={{ y: '-100%' }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="fixed inset-0 bg-[#776B5D] z-40"
             />
 
-            {/* Menu Content */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,30 +197,33 @@ export default function HeroSection() {
               className="fixed inset-0 flex flex-col items-center justify-center z-50 text-white px-4"
             >
               <button
-                onClick={() => setIsNavOpen(false)}
+                onClick={() => {
+                  playClickSound();
+                  setIsNavOpen(false);
+                }}
                 className="absolute top-5 right-5 w-12 h-12 flex items-center justify-center"
               >
                 <X size={32} />
               </button>
-              <nav
-                className="flex flex-col gap-12 items-center font-bold"
-                style={{ fontFamily: 'var(--font-sub)' }}
-              >
+
+              <nav className="flex flex-col gap-12 items-center font-bold" style={{ fontFamily: 'var(--font-sub)' }}>
                 <motion.a
-                style={{ fontFamily: 'pilow, display' }}
+                  style={{ fontFamily: 'pilow, display' }}
                   href="/projects"
+                  onClick={(e) => handleNavLinkClick(e, '/projects')}
                   className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
                   whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                 >
                   Projects
                 </motion.a>
                 <motion.a
-                style={{ fontFamily: 'pilow, display' }}
+                  style={{ fontFamily: 'pilow, display' }}
                   href="#media"
+                  onClick={playPopSound}
                   className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
                   whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                 >
                   Media
                 </motion.a>
