@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
 import { ChevronDown, X, Menu, ArrowRight } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
@@ -12,24 +12,37 @@ export default function HeroSection() {
   const scrollY = useMotionValue(0);
   const [heroEnd, setHeroEnd] = useState(1000);
 
+  // Sound effects
   const clickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const popAudioRef = useRef<HTMLAudioElement | null>(null);
+  const whooshAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     clickAudioRef.current = new Audio('/click.mp3');
-    clickAudioRef.current.load();
+    popAudioRef.current = new Audio('/pop.mp3');
+    whooshAudioRef.current = new Audio('/whoosh.mp3');
   }, []);
 
-  const playClickSound = useCallback(() => {
+  const playClick = () => {
     if (clickAudioRef.current) {
       clickAudioRef.current.currentTime = 0;
-      clickAudioRef.current.play().catch((e) => console.warn('Click sound error:', e));
+      clickAudioRef.current.play().catch((e) => console.warn('Click error:', e));
     }
-  }, []);
+  };
 
-  const playPopSound = useCallback(() => {
-    const audio = new Audio('/pop.mp3');
-    audio.play().catch((e) => console.warn('Pop sound error:', e));
-  }, []);
+  const playPop = () => {
+    if (popAudioRef.current) {
+      popAudioRef.current.currentTime = 0;
+      popAudioRef.current.play().catch((e) => console.warn('Pop error:', e));
+    }
+  };
+
+  const playWhoosh = () => {
+    if (whooshAudioRef.current) {
+      whooshAudioRef.current.currentTime = 0;
+      whooshAudioRef.current.play().catch((e) => console.warn('Whoosh error:', e));
+    }
+  };
 
   useEffect(() => {
     const el = heroRef.current;
@@ -44,9 +57,27 @@ export default function HeroSection() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
+    let lastScroll = 0;
+    let lastTime = performance.now();
+    let cooldown = false;
+
     function update(time: number) {
       lenis.raf(time);
-      scrollY.set(lenis.scroll);
+      const currentScroll = lenis.scroll;
+      scrollY.set(currentScroll);
+
+      const dt = time - lastTime;
+      const ds = Math.abs(currentScroll - lastScroll);
+      const speed = ds / (dt / 1000);
+
+      if (speed > 4000 && !cooldown) {
+        playWhoosh();
+        cooldown = true;
+        setTimeout(() => (cooldown = false), 1000);
+      }
+
+      lastScroll = currentScroll;
+      lastTime = time;
       requestAnimationFrame(update);
     }
 
@@ -57,16 +88,9 @@ export default function HeroSection() {
   const textY = useTransform(scrollY, [0, heroEnd - 200], [0, heroEnd / 2]);
   const textOpacity = useTransform(scrollY, [heroEnd - 300, heroEnd], [1, 0]);
   const scrollIndicatorOpacity = useTransform(scrollY, [0, 10], [1, 0]);
+
   const wave1Y = useTransform(scrollY, [0, heroEnd], [0, 100]);
   const wave2Y = useTransform(scrollY, [0, heroEnd], [0, 50]);
-
-  const handleNavLinkClick = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    playPopSound();
-    setTimeout(() => {
-      window.location.href = href;
-    }, 150); // Allow time for sound to play
-  };
 
   return (
     <div
@@ -76,7 +100,7 @@ export default function HeroSection() {
       {/* Hamburger Button */}
       <button
         onClick={() => {
-          playClickSound();
+          playClick();
           setIsNavOpen(true);
         }}
         className="absolute top-5 left-5 p-2 rounded-md flex items-center justify-center z-50"
@@ -87,8 +111,8 @@ export default function HeroSection() {
       {/* Contact Me Button */}
       <a
         href="#contact"
+        onClick={playClick}
         className="absolute top-5 right-5 z-50 group"
-        onClick={playClickSound}
       >
         <motion.div
           className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#776B5D] text-[#776B5D] font-medium"
@@ -118,11 +142,7 @@ export default function HeroSection() {
 
       {/* Scroll Indicator */}
       <motion.div
-        style={{
-          fontFamily: 'var(--font-sub)',
-          opacity: scrollIndicatorOpacity,
-          color: '#776B5D',
-        }}
+        style={{ fontFamily: 'var(--font-sub)', opacity: scrollIndicatorOpacity, color: '#776B5D' }}
         className="absolute bottom-10 flex flex-col items-center text-base sm:text-lg font-bold z-10"
       >
         scroll
@@ -165,7 +185,7 @@ export default function HeroSection() {
         </>
       )}
 
-      {/* Navigation */}
+      {/* Navigation Menu */}
       <AnimatePresence mode="wait">
         {isNavOpen && (
           <>
@@ -176,15 +196,15 @@ export default function HeroSection() {
               transition={{ duration: 0.5 }}
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
               onClick={() => {
-                playClickSound();
+                playClick();
                 setIsNavOpen(false);
               }}
             />
 
             <motion.div
-              initial={{ y: '-100%' }}
-              animate={{ y: '0%' }}
-              exit={{ y: '-100%' }}
+              initial={{ y: "-100%" }}
+              animate={{ y: "0%" }}
+              exit={{ y: "-100%" }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="fixed inset-0 bg-[#776B5D] z-40"
             />
@@ -198,32 +218,34 @@ export default function HeroSection() {
             >
               <button
                 onClick={() => {
-                  playClickSound();
+                  playClick();
                   setIsNavOpen(false);
                 }}
                 className="absolute top-5 right-5 w-12 h-12 flex items-center justify-center"
               >
                 <X size={32} />
               </button>
-
-              <nav className="flex flex-col gap-12 items-center font-bold" style={{ fontFamily: 'var(--font-sub)' }}>
+              <nav
+                className="flex flex-col gap-12 items-center font-bold"
+                style={{ fontFamily: 'var(--font-sub)' }}
+              >
                 <motion.a
                   style={{ fontFamily: 'pilow, display' }}
                   href="/projects"
-                  onClick={(e) => handleNavLinkClick(e, '/projects')}
                   className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
+                  onClick={playPop}
                   whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   Projects
                 </motion.a>
                 <motion.a
                   style={{ fontFamily: 'pilow, display' }}
                   href="#media"
-                  onClick={playPopSound}
                   className="hover:underline text-[#F3EEEA] text-8xl md:text-9xl"
+                  onClick={playPop}
                   whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   Media
                 </motion.a>
