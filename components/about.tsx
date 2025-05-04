@@ -1,18 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Lenis from "@studio-freight/lenis";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image"; // <-- Import Next.js Image
+import Image from "next/image"; // Import Next.js Image
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -33,8 +32,6 @@ export default function About() {
     requestAnimationFrame(raf);
 
     lenis.on('scroll', ScrollTrigger.update);
-
-    setIsLoaded(true);
 
     return () => {
       lenis.destroy();
@@ -75,11 +72,11 @@ export default function About() {
             alt="Vedant About"
             className="rounded-2xl object-cover w-full h-full"
             fill
-            quality={85} // Good compression without losing quality
-            priority={false} // Use lazy loading (default behavior)
-            placeholder="blur" // Optional blur effect during loading
-            blurDataURL="/placeholder.png" // Provide a small base64 image if you have it
-            sizes="(max-width: 768px) 100vw, 50vw" // Responsive image sizes
+            quality={85}
+            priority={false}
+            placeholder="blur"
+            blurDataURL="/placeholder.png"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </motion.div>
 
@@ -87,14 +84,12 @@ export default function About() {
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <motion.h2
             className="text-[#f5eddf] text-[32px] sm:text-[40px] md:text-[48px] font-bold tracking-wider mb-12 md:mb-24 leading-tight"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-            }}
+            style={{ fontFamily: "'Satoshi', 'Inter', sans-serif" }}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
-            Developer &
+            Developer &<br />
             Designer
           </motion.h2>
 

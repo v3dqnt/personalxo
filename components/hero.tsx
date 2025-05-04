@@ -5,7 +5,6 @@ import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-mo
 import { ChevronDown, X, Menu, ArrowRight } from 'lucide-react';
 import Lenis from '@studio-freight/lenis';
 import 'boxicons';
-import Link from "next/link";
 
 
 export default function HeroSection() {
